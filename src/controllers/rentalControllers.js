@@ -18,7 +18,7 @@ export const rentalNoticeWrite = async (req, res) => {
 
 export const rentalNotice = async (req, res) => {
   try {
-    const notices = await Notice.find({});
+    const notices = await Notice.find({}).sort({ createdAt: -1 });
     const counts = await Notice.count();
     res.json({ ok: "true", notices, counts });
   } catch (error) {
