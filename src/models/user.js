@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   username: String,
@@ -8,6 +9,13 @@ const userSchema = new mongoose.Schema({
   email: String,
   address: String,
   createdAt: Date,
+});
+
+// 데이터베이스에 "password"를 저장하기 전에 bcrypt를 이용하여 암호화 한 수 저장.
+userSchema.pre("save", async function () {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 5);
+  }
 });
 
 const User = mongoose.model("user", userSchema);
