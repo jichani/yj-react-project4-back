@@ -10,7 +10,7 @@ const app = express()
 
 const corsOptions = {
   origin: [
-    "http://localhost:3000"
+    "http://localhost:3000", "https://polite-sundae-84c7bd.netlify.app"
   ],
   methods: ["GET", "POST"],
   credentials: true,
