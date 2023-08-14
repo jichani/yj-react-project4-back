@@ -1,6 +1,7 @@
 import "./db.js";
 import express from "express";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import rentalRouter from "./routers/rentalRouter.js";
 import cors from "cors";
 import foodsRouter from "./routers/foodsRouter.js";
@@ -17,6 +18,8 @@ const corsOptions = {
   credentials: true,
 }
 
+// 미들웨어
+app.use(cookieParser());
 app.use(cors(corsOptions));
 // 라우팅 하기 전에 미들웨어를 해야만 실행이 된다. 현재 자리가 되게 중요함!
 app.use(morgan("dev"));

@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken"
 
 // 회원가입
 export const postRegisterMember = async (req, res) => {
@@ -45,4 +46,21 @@ export const postUsernameSignIn = async (req, res) => {
   if (!ok) {
     return res.status(401).json({ ok: "false", message: "아이디/패스워드가 다릅니다." })
   }
-}
+
+  // 쿠키 전송
+  try {
+    const accessToken = jwt.sign({
+      id: user._id
+    },
+      process.env.ACCESS_SECRET
+    )
+    res.cookie("accessToken", accessToken, {
+      secure: true,
+      httpOnly: false,
+      sameSite: "None",
+    });
+    res.status(200).json({ ok: "true" })
+  } catch (error) {
+    console.log(error);
+  }
+};
