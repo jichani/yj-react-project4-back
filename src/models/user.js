@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   address: String,
   createdAt: Date,
+  avatarUrl: String,
 });
 
 // 데이터베이스에 "password"를 저장하기 전에 bcrypt를 이용하여 암호화 한 수 저장.
