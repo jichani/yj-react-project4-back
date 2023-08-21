@@ -73,6 +73,7 @@ export const getLoginSuccess = async (req, res) => {
 
     res.status(200).json({ ok: "true", email: userData.email, name: userData.name });
   } catch (error) {
+    res.status(400).json({ ok: "false" });
     console.log(error);
   }
 }
@@ -88,5 +89,58 @@ export const logout = async (req, res) => {
     res.status(200).json({ ok: "true", message: "로그아웃 성공" });
   } catch (error) {
     console.log(error);
+  }
+};
+
+// 카카오 로그인
+export const kakaoLogin = async (req, res) => {
+  try {
+    // 카카오 로그인 2단계
+    const KAKAO_BASE_PATH = "https://kauth.kakao.com/oauth/token";
+    const config = {
+      grant_type: "authorization_code",
+      client_id: process.env.KAKAO_CLIENT_ID,
+      redirect_url: process.env.KAKAO_REDIRECT_URI,
+      code: req.body.code,
+    };
+    const params = new URLSearchParams(config).toString();
+    const finalUrl = `${KAKAO_BASE_PATH}?${params}`;
+
+    const data = await fetch(finalUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+    const tokenRequest = await data.json();
+    console.log(tokenRequest);
+
+    // 카카오 로그인 3단계
+    if ("access_token" in tokenRequest) {
+      const { access_token } = tokenRequest;
+      const userRequest = await fetch("https://kapi.kakao.com/v2/user/me", {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Authorization": `Bearer ${access_token}`,
+        }
+      });
+
+      const userData = await userRequest.json();
+      console.log(userData);
+
+      // 로그인 로직
+      const {
+        kakao_account: {
+          profile: {
+            nickname, thumbnail_image_url
+          },
+          email
+        }
+      } = userData;
+      console.log(nickname, thumbnail_image_url, email);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ ok: "false" });
   }
 }
