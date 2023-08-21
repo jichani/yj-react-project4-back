@@ -76,3 +76,17 @@ export const getLoginSuccess = async (req, res) => {
     console.log(error);
   }
 }
+
+// 로그 아웃
+export const logout = async (req, res) => {
+  try {
+    res.cookie("accessToken", "", {
+      secure: true,
+      httpOnly: false,
+      sameSite: "None",
+    });
+    res.status(200).json({ ok: "true", message: "로그아웃 성공" });
+  } catch (error) {
+    console.log(error);
+  }
+}
