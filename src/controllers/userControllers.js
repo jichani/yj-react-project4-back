@@ -71,7 +71,7 @@ export const getLoginSuccess = async (req, res) => {
     const data = jwt.verify(token, process.env.ACCESS_SECRET);
     const userData = await User.findOne({ _id: data.id });
 
-    res.status(200).json({ ok: "true", email: userData.email, name: userData.name });
+    res.status(200).json({ ok: "true", email: userData.email, name: userData.name, avatar: userData.avatarUrl, });
   } catch (error) {
     res.status(400).json({ ok: "false" });
     console.log(error);
@@ -160,7 +160,7 @@ export const kakaoLogin = async (req, res) => {
         }
       } else {
         // 회원가입 시킨다.
-        await User.create({
+        const user = await User.create({
           name: nickname,
           username: nickname,
           email: email,
