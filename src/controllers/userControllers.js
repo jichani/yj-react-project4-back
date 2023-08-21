@@ -137,8 +137,57 @@ export const kakaoLogin = async (req, res) => {
           email
         }
       } = userData;
-      console.log(nickname, thumbnail_image_url, email);
+
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+        // 로그인 시킨다.
+        try {
+          const accessToken = jwt.sign({
+            id: existingUser._id,
+          },
+            process.env.ACCESS_SECRET
+          )
+          res.cookie("accessToken", accessToken, {
+            secure: true,
+            httpOnly: false,
+            sameSite: "None",
+          });
+          res.status(200).json({ ok: "true" })
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ ok: "false" });
+        }
+      } else {
+        // 회원가입 시킨다.
+        await User.create({
+          name: nickname,
+          username: nickname,
+          email: email,
+          avatarUrl: thumbnail_image_url,
+          createdAt: Date.now(),
+        });
+
+        // 회원가입 후 로그인
+        try {
+          const accessToken = jwt.sign({
+            id: user._id,
+          },
+            process.env.ACCESS_SECRET
+          )
+          res.cookie("accessToken", accessToken, {
+            secure: true,
+            httpOnly: false,
+            sameSite: "None",
+          });
+          res.status(200).json({ ok: "true" })
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ ok: "false" });
+        }
+      }
     }
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ ok: "false" });
